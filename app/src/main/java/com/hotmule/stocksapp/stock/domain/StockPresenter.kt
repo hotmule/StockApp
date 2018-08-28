@@ -25,15 +25,22 @@ class StockPresenter(var view: StockContract.View) : StockContract.Presenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ answer ->
-                    view.showStock(answer.stock)
-                    view.setProgressVisibility(false)
+                    if (answer.stock != null) {
+                        view.showStock(answer.stock)
+                        view.setProgressVisibility(false)
+                    } else
+                        showError()
                 }, {
-                    view.showConnectionErrorMessage()
-                    view.setProgressVisibility(false)
+                    showError()
                 })
 
         compositeSubscription.add(observable)
 
+    }
+
+    private fun showError() {
+        view.showConnectionErrorMessage()
+        view.setProgressVisibility(false)
     }
 
     override fun onDestroy() {
